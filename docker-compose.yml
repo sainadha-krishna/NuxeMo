@@ -1,0 +1,65 @@
+version: "2.4"
+services:
+  mongodb:
+    image: mongo:4.0.12
+    container_name: mongo
+    hostname: mongo
+    command: mongod --replSet rs0
+    volumes:
+      - ./mongo/initRS.js:/docker-entrypoint-initdb.d/initRS.js:ro
+      - ./data/mongo/configdb:/data/configdb:rw
+      - ./data/mongo/db:/data/db:rw
+  nuxeo:
+    image: docker-private.packages.nuxeo.com/nuxeo/nuxeo:2023.0.52
+    container_name: nuxeo
+    hostname: nuxeo
+    # required to setup async-profiling
+    privileged: true
+    mem_reservation: 1g
+    mem_limit: 3g
+    environment:
+      # NUXEO_CONNECT_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo/site/
+      NUXEO_CONNECT_URL: https://connect.nuxeo.com/nuxeo/site/
+      NUXEO_CLID: 
+      NUX_PACKAGES: nuxeo-web-ui /var/lib/addons/*.zip
+      JAVA_OPTS: -Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8787
+    entrypoint: /nuxeo-stack-entrypoint.sh
+    command: nuxeoctl console
+    depends_on:
+      - mongodb
+    labels:
+      - "traefik.http.port=8080"
+      - "traefik.http.frontend.rule=Host:nuxeo.docker.localhost"
+      - "traefik.direct.port=8080"
+      - "traefik.direct.frontend.rule=Host:nuxeo-node.docker.localhost"
+      - "traefik.backend.healthcheck.path=/nuxeo/runningstatus"
+      - "traefik.backend.healthcheck.port=8080"
+      - "traefik.backend.healthcheck.interval=10s"
+    volumes:
+      - ./nuxeo/nuxeo.conf:/etc/nuxeo/conf.d/nuxeo-stack.conf:ro
+      - ./nuxeo/nuxeo-stack-entrypoint.sh:/nuxeo-stack-entrypoint.sh:ro
+      - ./nuxeo/templates:/templates:ro
+      - ./data/nuxeo-binaries:/var/lib/nuxeo/binaries:rw
+      - ./data/addons:/var/lib/addons:rw
+      - ./data/nuxeo/data:/var/lib/nuxeo/data:rw
+      - ./data/nuxeo/packages:/opt/nuxeo/server/packages:rw
+      - ./data/profiler:/profiler:rw
+  traefik:
+    image: traefik:maroilles-alpine
+    container_name: traefik
+    command: --api --docker
+    ports:
+      - 80:80
+    labels:
+      - "traefik.port=8080"
+      - "traefik.frontend.rule=Host:traefik.docker.localhost"
+    depends_on:
+      - nuxeo
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+# Set a MTU so Nuxeo can reach connect server even with a damn VPN
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1400
