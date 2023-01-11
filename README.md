@@ -19,10 +19,14 @@ Ready to go docker-compose to spin up a single nuxeo instance (LTS-2023) backed 
       127.0.0.1 traefik.docker.localhost
       
       
-      
+
 **Personalization:**
 
 Update the **NUXEO_CLID** environment variable in **docker-compose.yml** file with the personal clid
+
+**Nuxeo Version:**
+
+Currently the nuxeo service in docker-compose.yml file points to a private LTS-2023 image of nuxeo platform. This can be edited if desired.
 
 **Adding custom packages:**
 
