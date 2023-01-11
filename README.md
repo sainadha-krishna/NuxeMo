@@ -27,3 +27,25 @@ Update the **NUXEO_CLID** environment variable in **docker-compose.yml** file wi
 **Adding custom packages:**
 
 Custom add-on package zips must be placed under the data/addons folder. Please remove the **/var/lib/addons/*.zip** from **NUX_PACKAGES** environment variable in **docker-compose.yml** file if there are none
+
+
+**Editing config:**
+
+**nuxeo/nuxeo.conf** can be edited as desired to update any configurations
+
+
+**Running and accessing nuxeo:**
+
+Command to bring the compose up:
+
+            #change to current nuxemo directory which contains the docker-compose.yml file
+            cd nuxemo
+            #bring the docker compose up
+            docker-compose up
+
+Launched instance can be accessed in browser via the URL: **http://nuxeo.docker.localhost**
+
+
+To bring down the compose:
+
+            docker-compose down -v
