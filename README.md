@@ -24,13 +24,20 @@ Ready to go docker-compose to spin up a single nuxeo instance (LTS-2023) backed 
 
 Update the **NUXEO_CLID** environment variable in **docker-compose.yml** file with the personal clid
 
+Personal clid is the content of the below file from the existing registered nuxeo distribution:
+**NUXEO_HOME/nxserver/data/instance.clid**
+
+**Make sure to escape the new lines in this content with \n when pasting it against NUXEO_CLID**
+
+
+
 **Nuxeo Version:**
 
 Currently the nuxeo service in docker-compose.yml file points to a private LTS-2023 image of nuxeo platform. This can be edited if desired.
 
 **Adding custom packages:**
 
-Custom add-on package zips must be placed under the data/addons folder. Please remove the **/var/lib/addons/*.zip** from **NUX_PACKAGES** environment variable in **docker-compose.yml** file if there are none
+Custom add-on package zips must be placed under the **data/addons** folder. This folder has to be created by oneself. Please remove the **/var/lib/addons/*.zip** from **NUX_PACKAGES** environment variable in **docker-compose.yml** file if there are none
 
 
 **Editing config:**
