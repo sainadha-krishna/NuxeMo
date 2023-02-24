@@ -10,7 +10,7 @@ services:
       - ./data/mongo/configdb:/data/configdb:rw
       - ./data/mongo/db:/data/db:rw
   nuxeo:
-    image: docker-private.packages.nuxeo.com/nuxeo/nuxeo:2023.0.52
+    image: docker-private.packages.nuxeo.com/nuxeo/nuxeo:2021.33
     container_name: nuxeo
     hostname: nuxeo
     # required to setup async-profiling
@@ -18,15 +18,18 @@ services:
     mem_reservation: 1g
     mem_limit: 3g
     environment:
-      # NUXEO_CONNECT_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo/site/
-      NUXEO_CONNECT_URL: https://connect.nuxeo.com/nuxeo/site/
-      NUXEO_CLID: 
-      NUX_PACKAGES: nuxeo-web-ui /var/lib/addons/*.zip
+      NUXEO_CONNECT_URL: https://nos-preprod-connect.nuxeocloud.com/nuxeo/site/
+      # NUXEO_CONNECT_URL: https://connect.nuxeo.com/nuxeo/site/
+      NUXEO_CLID: 12e3bab6-5e0e-4718-aa99-2a8a29aac64d.1962418715.lla3nJnXsVc1Q0dZAyZ64nBUsyJoJ/PIPNx8u9b70SdlloPgi05mK/dgf2BnxHarROQ9n/fSta3xYMqMPrYJHA5aAg1Nay1/FP3osHQtF/Ut8Nbe3fQUMudvCHL7WXKpzNH8AIEjoEiJtRLldHnWwvXIFa3P3yY+ioet3/2e8rbEx+dzzH85jJyP2oh+spK9WND9Z38M7Et7IIISyIb7WT3RkvHtOe4S3hWgzqnLspiAoJgYEHa83bmZnhnhT+5nSnTSbLrvO4L44yvqIwF2gpCOueicmGY3ucX6d0hBiLyfD0GdjEdBKSpMWurLn/hUh/VzYRShhcR88op/J2QQIw==--96f1e3fe-d3eb-49c1-a447-dd576088acc2
+      #NUX_PACKAGES: nuxeo-web-ui /var/lib/addons/*.zip
+      NUX_PACKAGES: nuxeo-web-ui
       JAVA_OPTS: -Xdebug -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8787
     entrypoint: /nuxeo-stack-entrypoint.sh
     command: nuxeoctl console
     depends_on:
       - mongodb
+    ports:
+      - 8787:8787
     labels:
       - "traefik.http.port=8080"
       - "traefik.http.frontend.rule=Host:nuxeo.docker.localhost"
